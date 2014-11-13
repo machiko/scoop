@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+
+    <constant name="struts.enable.DynamicMethodInvocation" value="false" />
+    <constant name="struts.devMode" value="true" />
+
+    
+    <package name="com.mmseg" namespace="/MMSeg" extends="struts-default">
+        <!-- <action name="HelloWorld" class="MMSeg.HelloWorld">
+            <result type="redirect">
+                <param name="location">http://tw.yahoo.com</param>
+            </result>
+            <result name="google" type="redirect">
+                <param name="location">http://www.google.com</param>
+            </result>
+            <result name="jsp">
+                /WEB-INF/NewFile.jsp
+            </result>
+        </action>
+        <action name="Test" class="MMSeg.Demo">
+            <result>
+                /WEB-INF/Views/Test.jsp
+            </result>
+        </action> -->
+        <action name="*" class="com.mmseg.{1}">
+            <result>
+                /WEB-INF/Views/{1}.jsp
+            </result>
+        </action>
+    </package>
+    
+    <package name="com.api" namespace="/api" extends="json-default">
+        <action name="hello" class="com.api.Hello" method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
+        <action name="mmseg" class="com.api.SegChinese" method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
+        <action name="ckip" class="com.api.SegCkip" method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
+    </package>
+    
+    <package name="test" namespace="/" extends="json-default">
+        <action name="json" class="test.JsonAction"
+            method="loadJson">
+            <result type="json">
+                <param name="root">jsonStr</param>
+            </result>
+        </action>
+        <action name="jsonFromMap" class="test.JsonAction"
+            method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
+    </package>
+    
+   <!--  <package name="default" namespace="/" extends="struts-default">
+
+        <default-action-ref name="index" />
+
+        <global-results>
+            <result name="error">/error.jsp</result>
+        </global-results>
+
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+
+        <action name="index">
+            <result type="redirectAction">
+                <param name="actionName">HelloWorld</param>
+                <param name="namespace">/example</param>
+            </result>
+        </action>
+    </package> -->
+
+    <!-- <include file="example.xml"/> -->
+
+    <!-- Add packages here -->
+
+</struts>

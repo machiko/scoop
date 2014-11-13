@@ -1,0 +1,14 @@
+@CHARSET "US-ASCII";
+header {
+	width: 100%;
+	position: fixed;
+	z-index: 1;
+	background: #f2f2f2;
+	padding: 10px;
+}
+
+#segment-result {
+	width: 100%;
+	position: absolute;
+	margin-top: 380px;
+}

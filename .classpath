@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="/Volumes/Reyestorage/Dropbox/06.NCKU/project/mmseg4j-all-1.8.2-with-dic.jar"/>
 	<classpathentry kind="lib" path="/Volumes/Reyestorage/Dropbox/06.NCKU/project/ckipclient-java-0.4.jar"/>
 	<classpathentry kind="lib" path="/Volumes/Reyestorage/Dropbox/06.NCKU/project/dom4j-2.0.0-ALPHA-2.jar"/>
+	<classpathentry kind="lib" path="/Volumes/Reyestorage/Dropbox/06.NCKU/project/ik2012lucene4.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

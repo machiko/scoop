@@ -20,25 +20,33 @@ import java.util.Set;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
-public class TfidfAlgorithm {
-
-	/**
-	 * 檔案名保存在list
-	 */
-	private static List<String> fileList = new ArrayList<String>(); 
-	/**
-	 * 所有檔tf結果.key:檔案名,value:該文件tf
-	 */
-	private static Map<String, Map<String, Double>> allTfMap = new HashMap<String, Map<String, Double>>();  
-	
-	/**
-	 * 所有檔分詞結果.key:檔案名,value:該檔分詞統計
-	 */
+/**
+ * 
+ * <p>Title:TfIdfAlgorithm</p>
+ * <p>Description: tf-idf演算法實現
+ * </p>
+ * @createDate：2013-8-25 
+ * @author xq
+ * @version 1.0
+ */
+public class TfIdfAlgorithm {
+    /**
+     * 檔案名保存在list
+     */
+    private static List<String> fileList = new ArrayList<String>(); 
+    /**
+     * 所有檔tf結果.key:檔案名,value:該文件tf
+     */
+    private static Map<String, Map<String, Double>> allTfMap = new HashMap<String, Map<String, Double>>();  
+    
+    /**
+     * 所有檔分詞結果.key:檔案名,value:該檔分詞統計
+     */
     private static Map<String, Map<String, Integer>> allSegsMap = new HashMap<String, Map<String, Integer>>(); 
     
     /**
-	 * 所有檔分詞的idf結果.key:檔案名,value:詞w在整個文檔集合中的逆向文檔頻率idf (Inverse Document Frequency)，即文檔總數n與詞w所出現檔數docs(w, D)比值的對數
-	 */
+     * 所有檔分詞的idf結果.key:檔案名,value:詞w在整個文檔集合中的逆向文檔頻率idf (Inverse Document Frequency)，即文檔總數n與詞w所出現檔數docs(w, D)比值的對數
+     */
     private static Map<String, Double> idfMap = new HashMap<String, Double>();  
     
     /**
@@ -52,18 +60,18 @@ public class TfidfAlgorithm {
      */
     private static Map<String, Map<String, Double>> tfIdfMap = new HashMap<String, Map<String, Double>>();  
     
-	
-	/**
-	 * 
-	* @Title: readDirs
-	* @Description: 遞迴獲取文件
-	* @param @param filepath
-	* @param @return List<String>
-	* @param @throws FileNotFoundException
-	* @param @throws IOException    
-	* @return List<String>   
-	* @throws
-	 */
+    
+    /**
+     * 
+    * @Title: readDirs
+    * @Description: 遞迴獲取文件
+    * @param @param filepath
+    * @param @return List<String>
+    * @param @throws FileNotFoundException
+    * @param @throws IOException    
+    * @return List<String>   
+    * @throws
+     */
     private static List<String> readDirs(String filepath) throws FileNotFoundException, IOException {  
         try {  
             File file = new File(filepath);  
@@ -211,16 +219,16 @@ public class TfidfAlgorithm {
     * @throws
      */
     private static HashMap<String, Double> tf(Map<String, Integer> segWordsResult) { 
-    	
+        
         HashMap<String, Double> tf = new HashMap<String, Double>();// 正規化  
         if(segWordsResult==null || segWordsResult.size()==0){
-    		return tf;
-    	}
+            return tf;
+        }
         Double size=Double.valueOf(segWordsResult.size());
         Set<String> keys=segWordsResult.keySet();
         for(String key: keys){
-        	Integer value=segWordsResult.get(key);
-        	tf.put(key, Double.valueOf(value)/size);
+            Integer value=segWordsResult.get(key);
+            tf.put(key, Double.valueOf(value)/size);
         }
         return tf;  
     }  
@@ -235,20 +243,20 @@ public class TfidfAlgorithm {
     * @throws
      */
     public static Map<String, Map<String, Double>> allTf(String dir){
-    	try{
-    		fileList=readDirs(dir);
-    		for(String filePath : fileList){
-    			String content=readFile(filePath);
-    			Map<String, Integer> segs=segString(content);
-  			    allSegsMap.put(filePath, segs);
-    			allTfMap.put(filePath, tf(segs));
-    		}
-    	}catch(FileNotFoundException ffe){
-    		ffe.printStackTrace();
-    	}catch(IOException io){
-    		io.printStackTrace();
-    	}
-    	return allTfMap;
+        try{
+            fileList=readDirs(dir);
+            for(String filePath : fileList){
+                String content=readFile(filePath);
+                Map<String, Integer> segs=segString(content);
+                allSegsMap.put(filePath, segs);
+                allTfMap.put(filePath, tf(segs));
+            }
+        }catch(FileNotFoundException ffe){
+            ffe.printStackTrace();
+        }catch(IOException io){
+            io.printStackTrace();
+        }
+        return allTfMap;
     }
     
     /**
@@ -261,19 +269,19 @@ public class TfidfAlgorithm {
     * @throws
      */
     public static Map<String, Map<String, Integer>> wordSegCount(String dir){
-    	try{
-    		fileList=readDirs(dir);
-    		for(String filePath : fileList){
-    			String content=readFile(filePath);
-    			Map<String, Integer> segs=segStr(content);
-  			    allSegsMap.put(filePath, segs);
-    		}
-    	}catch(FileNotFoundException ffe){
-    		ffe.printStackTrace();
-    	}catch(IOException io){
-    		io.printStackTrace();
-    	}
-    	return allSegsMap;
+        try{
+            fileList=readDirs(dir);
+            for(String filePath : fileList){
+                String content=readFile(filePath);
+                Map<String, Integer> segs=segStr(content);
+                allSegsMap.put(filePath, segs);
+            }
+        }catch(FileNotFoundException ffe){
+            ffe.printStackTrace();
+        }catch(IOException io){
+            io.printStackTrace();
+        }
+        return allSegsMap;
     }
     
     
@@ -287,29 +295,29 @@ public class TfidfAlgorithm {
     * @throws
      */
     private static Map<String, Integer> containWordOfAllDocNumber(Map<String, Map<String, Integer>> allSegsMap){
-    	if(allSegsMap==null || allSegsMap.size()==0){
-    		return containWordOfAllDocNumberMap;
-    	}
-    	
-    	Set<String> fileList=allSegsMap.keySet();
-    	for(String filePath: fileList){
-    		Map<String, Integer> fileSegs=allSegsMap.get(filePath);
-    		//獲取該檔分詞為空或為0,進行下一個檔
-    		if(fileSegs==null || fileSegs.size()==0){
-    			continue;
-    		}
-    		//統計每個分詞的idf
-    		Set<String> segs=fileSegs.keySet();
-    		for(String seg : segs){
-    			if (containWordOfAllDocNumberMap.containsKey(seg)) {
-    				containWordOfAllDocNumberMap.put(seg, containWordOfAllDocNumberMap.get(seg) + 1);
+        if(allSegsMap==null || allSegsMap.size()==0){
+            return containWordOfAllDocNumberMap;
+        }
+        
+        Set<String> fileList=allSegsMap.keySet();
+        for(String filePath: fileList){
+            Map<String, Integer> fileSegs=allSegsMap.get(filePath);
+            //獲取該檔分詞為空或為0,進行下一個檔
+            if(fileSegs==null || fileSegs.size()==0){
+                continue;
+            }
+            //統計每個分詞的idf
+            Set<String> segs=fileSegs.keySet();
+            for(String seg : segs){
+                if (containWordOfAllDocNumberMap.containsKey(seg)) {
+                    containWordOfAllDocNumberMap.put(seg, containWordOfAllDocNumberMap.get(seg) + 1);
                 } else {
-                	containWordOfAllDocNumberMap.put(seg, 1);
+                    containWordOfAllDocNumberMap.put(seg, 1);
                 }
-    		}
-    		
-    	}
-    	return containWordOfAllDocNumberMap;
+            }
+            
+        }
+        return containWordOfAllDocNumberMap;
     }
     
     /**
@@ -322,17 +330,17 @@ public class TfidfAlgorithm {
     * @throws
      */
     public static Map<String, Double> idf(Map<String, Map<String, Integer>> allSegsMap){
-    	if(allSegsMap==null || allSegsMap.size()==0){
-    		return idfMap;
-    	}
-    	containWordOfAllDocNumberMap=containWordOfAllDocNumber(allSegsMap);
-    	Set<String> words=containWordOfAllDocNumberMap.keySet();
-    	Double wordSize=Double.valueOf(containWordOfAllDocNumberMap.size());
-    	for(String word: words){
-    		Double number=Double.valueOf(containWordOfAllDocNumberMap.get(word));
-    		idfMap.put(word, Math.log(wordSize/(number+1.0d)));
-    	}
-    	return idfMap;
+        if(allSegsMap==null || allSegsMap.size()==0){
+            return idfMap;
+        }
+        containWordOfAllDocNumberMap=containWordOfAllDocNumber(allSegsMap);
+        Set<String> words=containWordOfAllDocNumberMap.keySet();
+        Double wordSize=Double.valueOf(containWordOfAllDocNumberMap.size());
+        for(String word: words){
+            Double number=Double.valueOf(containWordOfAllDocNumberMap.get(word));
+            idfMap.put(word, Math.log(wordSize/(number+1.0d)));
+        }
+        return idfMap;
     }
     
     /**
@@ -344,53 +352,52 @@ public class TfidfAlgorithm {
     * @throws
      */
     public static Map<String, Map<String, Double>> tfIdf(Map<String, Map<String, Double>> allTfMap,Map<String, Double> idf){
-    	
-    	Set<String> fileList=allTfMap.keySet();
-     	for(String filePath : fileList){
-    		Map<String, Double> tfMap=allTfMap.get(filePath);
-    		Map<String, Double> docTfIdf=new HashMap<String,Double>();
-    		Set<String> words=tfMap.keySet();
-    		for(String word: words){
-    			Double tfValue=Double.valueOf(tfMap.get(word));
-        		Double idfValue=idf.get(word);
-        		docTfIdf.put(word, tfValue*idfValue);
-    		}
-    		tfIdfMap.put(filePath, docTfIdf);
-    	}
-    	return tfIdfMap;
+        
+        Set<String> fileList=allTfMap.keySet();
+        for(String filePath : fileList){
+            Map<String, Double> tfMap=allTfMap.get(filePath);
+            Map<String, Double> docTfIdf=new HashMap<String,Double>();
+            Set<String> words=tfMap.keySet();
+            for(String word: words){
+                Double tfValue=Double.valueOf(tfMap.get(word));
+                Double idfValue=idf.get(word);
+                docTfIdf.put(word, tfValue*idfValue);
+            }
+            tfIdfMap.put(filePath, docTfIdf);
+        }
+        return tfIdfMap;
     }
     
     
-    public static void main(String[] args) {
-    	
-    	System.out.println("tf--------------------------------------");
-    	Map<String, Map<String, Double>> allTfMap = TfidfAlgorithm.allTf("/Users/reyes/Downloads/dir");
-    	Set<String> fileList=allTfMap.keySet();
-      	for(String filePath : fileList){
-     		Map<String, Double> tfMap=allTfMap.get(filePath);
-     		Set<String> words=tfMap.keySet();
-     		for(String word: words){
-     			System.out.println("fileName:"+filePath+"     word:"+word+"      tf:"+tfMap.get(word));
-     		}
-     	}
-      	
-      	System.out.println("idf--------------------------------------");
-      	Map<String, Double> idfMap = TfidfAlgorithm.idf(allSegsMap);
-    	Set<String> words=idfMap.keySet();
-      	for(String word : words){
-     		System.out.println("word:"+word+"     tf:"+idfMap.get(word));
-     	}
-    	
-      	System.out.println("tf-idf--------------------------------------");
-      	Map<String, Map<String, Double>> tfIdfMap = TfidfAlgorithm.tfIdf(allTfMap, idfMap);
-      	Set<String> files=tfIdfMap.keySet();
-      	for(String filePath : files){
-      		Map<String, Double> tfIdf=tfIdfMap.get(filePath);
-    		Set<String> segs=tfIdf.keySet();
-    		for(String word: segs){
-    			System.out.println("fileName:"+filePath+"     word:"+word+"        tf-idf:"+tfIdf.get(word));
-    		}
-      	}
+    public static void main(String[] args){
+        
+        System.out.println("tf--------------------------------------");
+        Map<String, Map<String, Double>> allTfMap=TfIdfAlgorithm.allTf("/Users/reyes/Downloads/tfidf");
+        Set<String> fileList=allTfMap.keySet();
+        for(String filePath : fileList){
+            Map<String, Double> tfMap=allTfMap.get(filePath);
+            Set<String> words=tfMap.keySet();
+            for(String word: words){
+                System.out.println("fileName:"+filePath+"     word:"+word+"      tf:"+tfMap.get(word));
+            }
+        }
+        
+        System.out.println("idf--------------------------------------");
+        Map<String, Double> idfMap=TfIdfAlgorithm.idf(allSegsMap);
+        Set<String> words=idfMap.keySet();
+        for(String word : words){
+            System.out.println("word:"+word+"     tf:"+idfMap.get(word));
+        }
+        
+        System.out.println("tf-idf--------------------------------------");
+        Map<String, Map<String, Double>> tfIdfMap=TfIdfAlgorithm.tfIdf(allTfMap, idfMap);
+        Set<String> files=tfIdfMap.keySet();
+        for(String filePath : files){
+            Map<String, Double> tfIdf=tfIdfMap.get(filePath);
+            Set<String> segs=tfIdf.keySet();
+            for(String word: segs){
+                System.out.println("fileName:"+filePath+"     word:"+word+"        tf-idf:"+tfIdf.get(word));
+            }
+        }
     }
-
 }

@@ -1,4 +1,4 @@
-package com.tfidf;
+package com.api;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,25 +9,92 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.*;
-import java.util.Map.Entry;
 
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 import tw.cheyingwu.ckip.CKIP;
 import tw.cheyingwu.ckip.Term;
 import tw.cheyingwu.ckip.WordSegmentationService;
 
-/**
- * 
- * <p>Title:TfIdfAlgorithm</p>
- * <p>Description: tf-idf演算法實現
- * </p>
- * @createDate：2013-8-25 
- * @author xq
- * @version 1.0
- */
-public class TfIdfAlgorithmCKIP {
+public class SegTFIDF extends ActionSupport {
+    private Map<String, Object> dataMap;
+    private String content;
+    
+    public void setContent(String content) {
+        this.content = content;
+    }
+    
+    public Map<String,Object> getDataMap() {
+        return dataMap;
+    }
+    
+    public String loadJsonFromMap() {
+        Map<String, Object> segWords = segWords(content);
+        dataMap = new HashMap<String, Object>();
+        dataMap = segWords;
+//        dataMap.put("test", segWords);
+        return SUCCESS;
+    }
+    
+    public Map<String, Object> segWords(String txt) {
+    	dataMap = new HashMap<String, Object>();
+    	ArrayList<String> fileList = new ArrayList<String>();
+    	ArrayList<String> tfidfList = new ArrayList<String>();
+    	Map<String, Map<String, Double>> allTfMap=SegTFIDF.allTf("/Users/reyes/Downloads/tfidf");
+    	Map<String, Double> idfMap=SegTFIDF.idf(allSegsMap);
+    	
+    	Map<String, Map<String, Double>> tfIdfMap=SegTFIDF.tfIdf(allTfMap, idfMap);
+        Set<String> files=tfIdfMap.keySet();
+        
+        
+        for(String filePath : files){
+            Map<String, Double> tfIdf=tfIdfMap.get(filePath);
+            Set<String> segs=tfIdf.keySet();
+            
+            // sort
+            List<Map.Entry<String,Double>> list=new ArrayList<>();
+            list.addAll(tfIdf.entrySet());
+            ValueComparator vc = new ValueComparator();
+            Collections.sort(list, vc);
+//            Object[] objArray = list.toArray();
+
+            System.out.println(list.toString());
+            
+            for(String word: segs){
+//                System.out.println("fileName:"+filePath+"     word:"+word+"        tf-idf:"+tfIdf.get(word));
+            }
+            fileList.add(filePath);
+            tfidfList.add(list.toString());
+        }
+        dataMap.put("filePath", fileList);
+        dataMap.put("tfidf", tfidfList);
+        
+//        System.out.println("********** 使用中研院斷詞伺服器 *********");
+//        WordSegmentationService c; //宣告一個class變數c
+//        ArrayList<String> inputList = new ArrayList<String>(); //宣告動態陣列 存切詞的name
+//        ArrayList<String> TagList = new ArrayList<String>();   //宣告動態陣列 存切詞的詞性
+//         
+//        
+//        c = new CKIP( "140.109.19.104" , 1501, "reyes", "reyes123"); //輸入申請的IP、port、帳號、密碼
+//        
+//        c.setRawText(txt);
+//        c.send(); //傳送至中研院斷詞系統服務使用
+//        
+//        for (Term t : c.getTerm()) {
+//            
+//            inputList.add(t.getTerm()); // t.getTerm()會讀到斷詞的String，將其存到inputList陣列
+//            TagList.add(t.getTag());    // t.getTag() 會讀到斷詞的詞性，將其存到TagList陣列
+//        }
+        
+//        dataMap.put("word", inputList);
+//        dataMap.put("speech", TagList);
+        
+        return dataMap;
+    }
+    
     /**
      * 檔案名保存在list
      */
@@ -56,7 +123,8 @@ public class TfIdfAlgorithmCKIP {
      * 統計單詞的TF-IDF
      * key:檔案名 value:該文件tf-idf
      */
-    private static Map<String, Map<String, Double>> tfIdfMap = new HashMap<String, Map<String, Double>>();  
+    private static Map<String, Map<String, Double>> tfIdfMap = new HashMap<String, Map<String, Double>>();
+//    private static Map<String, Map<String, Double>> tfIdfMap = new TreeMap<String, Map<String, Double>>();
     
     
     /**
@@ -204,21 +272,19 @@ public class TfIdfAlgorithmCKIP {
         // 分詞
         Reader input = new StringReader(content);
         // 智慧分詞關閉（對分詞的精度影響很大）
-//        IKSegmenter iks = new IKSegmenter(input, true);
-//        Lexeme lexeme = null;
+        IKSegmenter iks = new IKSegmenter(input, true);
+        Lexeme lexeme = null;
         Map<String, Integer> words = new LinkedHashMap<String, Integer>();
-        WordSegmentationService c; //宣告一個class變數c
-        
-        c = new CKIP( "140.109.19.104" , 1501, "reyes", "reyes123"); //輸入申請的IP、port、帳號、密碼
-        c.setRawText(content);
-        c.send(); //傳送至中研院斷詞系統服務使用
-        
-        for (Term t : c.getTerm()) {
-            if (words.containsKey(t.getTerm())) {
-            	words.put(t.getTerm(), words.get(t.getTerm()) + 1);
-            } else {
-            	words.put(t.getTerm(), 1);
+        try {
+            while ((lexeme = iks.next()) != null) {
+                if (words.containsKey(lexeme.getLexemeText())) {
+                    words.put(lexeme.getLexemeText(), words.get(lexeme.getLexemeText()) + 1);
+                } else {
+                    words.put(lexeme.getLexemeText(), 1);
+                }
             }
+        }catch(IOException e) {
+            e.printStackTrace();
         }
         return words;
     }
@@ -407,61 +473,19 @@ public class TfIdfAlgorithmCKIP {
                 Double idfValue=idf.get(word);
                 docTfIdf.put(word, tfValue*idfValue);
             }
-            List<Map.Entry<String,Double>> list=new ArrayList<>();
-            list.addAll(docTfIdf.entrySet());
-//		TfIdfAlgorithmCKIP.ValueComparator vc = new ValueComparator();
-            ValueComparator vc = new ValueComparator();
-            Collections.sort(list,vc);
-            for(Iterator<Map.Entry<String,Double>> it=list.iterator();it.hasNext();)
-            {
-            	System.out.println(it.next());
-            }
             
             tfIdfMap.put(filePath, docTfIdf);
         }
-        
-		
         return tfIdfMap;
     }
-    
-    public static void main(String[] args){
-        
-//        System.out.println("tf--------------------------------------");
-        Map<String, Map<String, Double>> allTfMap=TfIdfAlgorithmCKIP.allTf("/Users/reyes/Downloads/tfidf");
-//        Set<String> fileList=allTfMap.keySet();
-//        for(String filePath : fileList){
-//            Map<String, Double> tfMap=allTfMap.get(filePath);
-//            Set<String> words=tfMap.keySet();
-//            for(String word: words){
-//                System.out.println("fileName:"+filePath+"     word:"+word+"      tf:"+tfMap.get(word));
-//            }
-//        }
-        
-//        System.out.println("idf--------------------------------------");
-        Map<String, Double> idfMap=TfIdfAlgorithmCKIP.idf(allSegsMap);
-//        Set<String> words=idfMap.keySet();
-//        for(String word : words){
-//            System.out.println("word:"+word+"     tf:"+idfMap.get(word));
-//        }
-        
-        System.out.println("tf-idf--------------------------------------");
-        Map<String, Map<String, Double>> tfIdfMap=TfIdfAlgorithmCKIP.tfIdf(allTfMap, idfMap);
-        Set<String> files=tfIdfMap.keySet();
-        for(String filePath : files){
-            Map<String, Double> tfIdf=tfIdfMap.get(filePath);
-            Set<String> segs=tfIdf.keySet();
-            for(String word: segs){
-//                System.out.println("fileName:"+filePath+"     word:"+word+"        tf-idf:"+tfIdf.get(word));
-            }
-        }
-    }
+
 }
 
 //sort
 class ValueComparator implements Comparator<Map.Entry<String, Double>>  
 {  
-    public int compare(Map.Entry<String, Double> mp1, Map.Entry<String, Double> mp2)   
-    {  
-        return (int)((mp2.getValue() - mp1.getValue()) * Math.pow(10, 17));
-    }  
+  public int compare(Map.Entry<String, Double> mp1, Map.Entry<String, Double> mp2)   
+  {  
+      return (int)((mp2.getValue() - mp1.getValue()) * Math.pow(10, 17));
+  }  
 }  

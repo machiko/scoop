@@ -49,6 +49,11 @@
                 <param name="root">dataMap</param>
             </result>
         </action>
+        <action name="tfidf" class="com.api.SegTFIDF" method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
     </package>
     
     <package name="test" namespace="/" extends="json-default">

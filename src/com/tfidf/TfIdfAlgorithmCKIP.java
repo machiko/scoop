@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -150,6 +152,8 @@ public class TfIdfAlgorithmCKIP {
     }
     
     /**
+     * @throws IOException 
+     * @throws FileNotFoundException 
      * 
     * @Title: segCKIP
     * @Description: 用ckip進行字串分詞,統計各個詞出現的次數
@@ -158,7 +162,7 @@ public class TfIdfAlgorithmCKIP {
     * @return Map<String,Integer>   
     * @throws
      */
-    private static Map<String, Integer> segCKIP(String content){
+    private static Map<String, Integer> segCKIP(String content) throws FileNotFoundException, IOException{
         // 分詞
         Reader input = new StringReader(content);
         // 智慧分詞關閉（對分詞的精度影響很大）
@@ -177,12 +181,19 @@ public class TfIdfAlgorithmCKIP {
         c.setRawText(content);
         c.send(); //傳送至中研院斷詞系統服務使用
         
+        // 排除字典
+        URL url = TfIdfAlgorithmCKIP.class.getResource("/com/api/exclude.dic");
+        String excContent=readFile(url.getPath());
+        
         for (Term t : c.getTerm()) {
-            if (words.containsKey(t.getTerm())) {
-            	words.put(t.getTerm(), words.get(t.getTerm()) + 1);
-            } else {
-            	words.put(t.getTerm(), 1);
-            }
+        	if (!excContent.contains(t.getTerm())) {
+        		if (words.containsKey(t.getTerm())) {
+        			
+        			words.put(t.getTerm(), words.get(t.getTerm()) + 1);
+        		} else {
+        			words.put(t.getTerm(), 1);
+        		}        		
+        	}
 //            inputList.add(t.getTerm()); // t.getTerm()會讀到斷詞的String，將其存到inputList陣列
 //            TagList.add(t.getTag());    // t.getTag() 會讀到斷詞的詞性，將其存到TagList陣列
         }
@@ -192,6 +203,8 @@ public class TfIdfAlgorithmCKIP {
     
     
     /**
+     * @throws IOException 
+     * @throws FileNotFoundException 
      * 
     * @Title: segStr
     * @Description: 返回LinkedHashMap的分詞
@@ -200,7 +213,7 @@ public class TfIdfAlgorithmCKIP {
     * @return Map<String,Integer>   
     * @throws
      */
-    public static Map<String, Integer> segStr(String content){
+    public static Map<String, Integer> segStr(String content) throws FileNotFoundException, IOException {
         // 分詞
         Reader input = new StringReader(content);
         // 智慧分詞關閉（對分詞的精度影響很大）
@@ -213,13 +226,21 @@ public class TfIdfAlgorithmCKIP {
         c.setRawText(content);
         c.send(); //傳送至中研院斷詞系統服務使用
         
+     // 排除字典
+        URL url = TfIdfAlgorithmCKIP.class.getResource("/com/api/exclude.dic");
+        String excContent=readFile(url.getPath());
+        
         for (Term t : c.getTerm()) {
-            if (words.containsKey(t.getTerm())) {
-            	words.put(t.getTerm(), words.get(t.getTerm()) + 1);
-            } else {
-            	words.put(t.getTerm(), 1);
-            }
+        	if (!excContent.contains(t.getTerm())) {
+        		if (words.containsKey(t.getTerm())) {
+        			
+        			words.put(t.getTerm(), words.get(t.getTerm()) + 1);
+        		} else {
+        			words.put(t.getTerm(), 1);
+        		}        		
+        	}
         }
+        
         return words;
     }
     
@@ -288,7 +309,9 @@ public class TfIdfAlgorithmCKIP {
         try{
             fileList=readDirs(dir);
             for(String filePath : fileList){
-                String content=readFile(filePath);
+                String content = readFile(filePath);
+//            	InputStream in = TfIdfAlgorithmCKIP.class.getResourceAsStream("/ik/ext.dic");
+//    			Reader fr = new InputStreamReader(in, "utf-8");
 //                Map<String, Integer> segs=segString(content);
                 Map<String, Integer> segs=segCKIP(content);
                 allSegsMap.put(filePath, segs);

@@ -1,6 +1,7 @@
 package com.tfidf;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,11 +66,42 @@ public class CosineSimilarAlgorithm {
 		try{
 			Map<String, Integer> firstTfMap=TfIdfAlgorithmCKIP.segStr(first);
 			Map<String, Integer> secondTfMap=TfIdfAlgorithmCKIP.segStr(second);
-			if(firstTfMap.size()<secondTfMap.size()){
-				Map<String, Integer> temp=firstTfMap;
-				firstTfMap=secondTfMap;
-				secondTfMap=temp;
+			
+			Map<String, int[]> vectorSpace = new HashMap<String, int[]>();
+			int[] itemCountArray = null;
+		
+			for (Object key: firstTfMap.keySet()) {
+				itemCountArray = new int[2];
+				itemCountArray[0] = firstTfMap.get(key);
+   	         	itemCountArray[1] = 0;
+				vectorSpace.put((String) key, itemCountArray);
 			}
+			
+			for (Object key: secondTfMap.keySet()) {
+				if (vectorSpace.containsKey(key)) {
+					vectorSpace.get(key)[1] = secondTfMap.get(key);
+				} else {
+					itemCountArray = new int[2];
+					itemCountArray[0] = 0;
+					itemCountArray[1] = secondTfMap.get(key);
+					vectorSpace.put((String) key, itemCountArray);
+				}
+				
+			}
+			
+			firstTfMap.clear();
+			secondTfMap.clear();
+			
+			for (Object key: vectorSpace.keySet()) {
+				firstTfMap.put((String) key, vectorSpace.get(key)[0]);
+				secondTfMap.put((String) key, vectorSpace.get(key)[1]);
+			}
+//			if(firstTfMap.size()<secondTfMap.size()){
+//				Map<String, Integer> temp=firstTfMap;
+//				firstTfMap=secondTfMap;
+//				secondTfMap=temp;
+//			}
+			
 			return calculateCos((LinkedHashMap<String, Integer>)firstTfMap, (LinkedHashMap<String, Integer>)secondTfMap);
 			
 		}catch(Exception e){
@@ -92,6 +124,8 @@ public class CosineSimilarAlgorithm {
 		
 		List<Map.Entry<String, Integer>> firstList = new ArrayList<Map.Entry<String, Integer>>(first.entrySet());
 		List<Map.Entry<String, Integer>> secondList = new ArrayList<Map.Entry<String, Integer>>(second.entrySet());
+		
+		
 		//計算相似度  
         double vectorFirstModulo = 0.00;//向量1的模  
         double vectorSecondModulo = 0.00;//向量2的模  
@@ -108,8 +142,8 @@ public class CosineSimilarAlgorithm {
 	}
 	
 	public static void main(String[] args){
-		Double result=cosSimilarityByString("空污問題不可不慎，因為霾害可能導致心血管疾病，以細懸浮微粒PM2.5來說，除了會影響能見度，還會損害人體健康。且PM2.5引發肺癌風險更勝二手菸，乃因PM2.5易附著戴奧辛、多環芳香烴以及重金屬等有毒物質。",
-				"空污問題不可不慎，以細懸浮微粒PM2.5來說，除了會影響能見度，還會損害人體健康。且PM2.5引發肺癌風險更勝二手菸，乃因PM2.5易附著戴奧辛、多環芳香烴以及重金屬等有毒物質。");
+		Double result=cosSimilarityByString("（中央社記者唐佩君台北30日電）行政院長毛治國今天宣布，近日降水使用水量多了約一週，再加上因應清明假期，因此3階限水延後一個星期至4月8日實施，但仍請大家盡量節約用水。",
+				"趕在截止前最後一天，總統府30日召開國安高層會議，決定將由財政部擬定參與亞投行意向書，對於台灣確定申請加入亞投行，財政部長張盛和表示，我們有資金、技術，絕對是對國際社會有貢獻的，也對國家經濟發展有正面影響。");
 		
 //		Double result = cosSimilarityByFile("/Users/reyes/Downloads/cosine1/", "/Users/reyes/Downloads/cosine2/");
 		System.out.println(result);

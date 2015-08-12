@@ -307,7 +307,8 @@ public class TfIdfAlgorithmCKIP {
      */
     public static Map<String, Map<String, Double>> allTf(String dir){
         try{
-            fileList=readDirs(dir);
+        	fileList = null;
+            fileList = readDirs(dir);
             for(String filePath : fileList){
                 String content = readFile(filePath);
 //            	InputStream in = TfIdfAlgorithmCKIP.class.getResourceAsStream("/ik/ext.dic");
@@ -335,20 +336,25 @@ public class TfIdfAlgorithmCKIP {
     * @throws
      */
     public static Map<String, Map<String, Integer>> wordSegCount(String dir){
+    	Map<String, Map<String, Integer>> allSegsMap1 = new HashMap<String, Map<String, Integer>>();
         try{
+        	if (fileList.size() >0) {
+        		fileList.remove(0);
+        	}
+        	
             fileList=readDirs(dir);
-            for(String filePath : fileList){
+            for (String filePath : fileList) {
                 String content=readFile(filePath);
 //                Map<String, Integer> segs=segStr(content);
                 Map<String, Integer> segs=segCKIP(content);
-                allSegsMap.put(filePath, segs);
+                allSegsMap1.put(filePath, segs);
             }
         }catch(FileNotFoundException ffe){
             ffe.printStackTrace();
         }catch(IOException io){
             io.printStackTrace();
         }
-        return allSegsMap;
+        return allSegsMap1;
     }
     
     

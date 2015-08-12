@@ -17,5 +17,7 @@
 	<classpathentry kind="lib" path="/Users/reyes/Documents/Dropbox/06.NCKU/project/ckipclient-java-0.4.jar"/>
 	<classpathentry kind="lib" path="/Users/reyes/Documents/Dropbox/06.NCKU/project/dom4j-2.0.0-ALPHA-2.jar"/>
 	<classpathentry kind="lib" path="/Users/reyes/Documents/Dropbox/06.NCKU/project/ik2012lucene4.jar"/>
+	<classpathentry kind="lib" path="/Users/reyes/Documents/Dropbox/06.NCKU/project/cors-filter-2.4.jar"/>
+	<classpathentry kind="lib" path="/Users/reyes/Documents/Dropbox/06.NCKU/project/java-property-utils-1.9.1.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

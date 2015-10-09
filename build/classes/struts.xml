@@ -54,6 +54,11 @@
                 <param name="root">dataMap</param>
             </result>
         </action>
+        <action name="csa" class="com.api.CSA" method="loadJsonFromMap">
+            <result type="json">
+                <param name="root">dataMap</param>
+            </result>
+        </action>
     </package>
     
     <package name="test" namespace="/" extends="json-default">

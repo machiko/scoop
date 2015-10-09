@@ -357,6 +357,39 @@ public class TfIdfAlgorithmCKIP {
         return allSegsMap1;
     }
     
+    /**
+     * 
+    * @Title: wordSegCountByContent
+    * @Description: 返回分詞結果,以LinkedHashMap保存
+    * @param @param dir
+    * @param @return    
+    * @return Map<String,Map<String,Integer>>   
+    * @throws
+     */
+    public static Map<String, Map<String, Integer>> wordSegCountByContent(String Content){
+    	Map<String, Map<String, Integer>> allSegsMap1 = new HashMap<String, Map<String, Integer>>();
+        try{
+        	if (fileList.size() >0) {
+        		fileList.remove(0);
+        	}
+        	
+//            fileList=readDirs(dir);
+//            for (String filePath : fileList) {
+//                String content=readFile(filePath);
+////                Map<String, Integer> segs=segStr(content);
+//                Map<String, Integer> segs=segCKIP(content);
+//                allSegsMap1.put(filePath, segs);
+//            }
+        	Map<String, Integer> segs=segCKIP(Content);
+        	allSegsMap1.put("wordseg", segs);
+        }catch(FileNotFoundException ffe){
+            ffe.printStackTrace();
+        }catch(IOException io){
+            io.printStackTrace();
+        }
+        return allSegsMap1;
+    }
+    
     
     /**
      * 
